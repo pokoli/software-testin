@@ -1,0 +1,289 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>Software Testing</title>
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/night.css">
+		<link rel="stylesheet" href="css/custom.css">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+                    <h1>Software Testing</h1>
+                    <img src="img/testing-cows.jpg">
+                    <p>Available on: <a target="_blank"
+                        href="http://pokoli.github.io/software-testing">
+                        http://pokoli.github.io/software-testing</a></p>
+                </section>
+				<section>
+                    <h2> Who am I?</h2>
+                    <h3 class="fragment enfassis">
+                        Sergi Almacellas Abellana</h3>
+                    <ul>
+                        <li class="fragment">(Python &hearts;) Programmer</li>
+                        <li class="fragment">Open source enthusiast</li>
+                        <li class="fragment">Automation Maniac
+                        </li>
+                    </ul>
+                </section>
+				<section>
+                    <h2>Bug Fixing Costs</h2>
+                    <img class="fragment" src="img/bug-fix-costs.jpg">
+                    <h2 class="fragment">TDD & BDD to the rescue!!</h2>
+                </section>
+				<section>
+                    <h2>Test Driven Development</h2>
+                    <ol class="enfassis">
+                        <li class="fragment">Write Test Case</li>
+                        <li class="fragment">Ensure Test Fails</li>
+                        <li class="fragment">Implement Functionality</li>
+                        <li class="fragment">Ensure Test Pass</li>
+                        <li class="fragment">Refractor</li>
+                        <li class="fragment">Ensure Test Pass</li>
+                    </ol>
+                </section>
+				<section>
+                    <h2>TDD Example</h2>
+                    <pre class="fragment"><code>
+def sum(a, b):
+    return a + b
+                    </code></pre>
+                    <pre class="fragment"><code>
+self.assertEqual(sum(1, 2), 3)
+                    </code></pre>
+                    <pre class="fragment"><code>
+self.assertIsInstance(sum(1, 2), int)
+self.assertNotIsInstance(sum(1.0, 2), int)
+                    </code></pre>
+                    <pre class="fragment"><code>
+self.assertRaises(TypeError, sum('1', 2))
+self.assertRaises(TypeError, sum())
+                    </code></pre>
+                </section>
+				<section>
+                    <h2>But how to tests external services?</h2>
+                    <pre><code>
+import requests
+from datetime import date
+url = 'http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml'
+
+class CurrencyConverter(object):
+
+    def get_ratios_xml(date):
+        return resquests.get(url)
+
+    def update_ratios():
+        self.parse_data(self.get_ratios_xml(date.today()))
+
+    def get_eur_to_usd(self, amount):
+        if not self.ratios:
+            self.update_ratios()
+        return self.ratios['usd'] * amount
+                    </code></pre>
+                </section>
+				<section>
+                    <h2>Mockups to the rescue!!!</h2>
+                    <pre><code>
+from mock import patch
+
+converter = CurrencyConverter()
+
+@patch.object(converter, 'get_ratios_xml')
+def get_local_ratios_xml(date, mock_method):
+    mock_metohd.assert_called_with(date.today)
+    return open('local.xml').read()
+
+self.assertEqual(converter.get_eur_to_usd(1), 1.12)
+                    </code></pre>
+                </section>
+                <section>
+                    <h2>Behaviour Driven Development</h2>
+                    <ol class="enfassis">
+                        <li class="fragment">TDD Extension (same filosofy)</li>
+                        <li class="fragment">Describes User Interaction</li>
+                        <li class="fragment">Who</li>
+                        <li class="fragment">What effect</li>
+                        <li class="fragment">Which bussiness effect</li>
+                    </ol>
+                </section>
+				<section>
+                    <h2>BDD Example</h2>
+                    <span class="fragment" style="text-align:left">
+                        <b>Story:</b> Application login</br>
+                    </span>
+                    </br>
+                    <span class="fragment" style="text-align:left">
+                        <b>In order to</b> use the aplication</br>
+                        <b>As a</b> application user</br>
+                        <b>I want to</b> Enter the application</br>
+                    </span>
+                    </br>
+                    <span class="fragment">
+                        <b>Scenario 1: </b>Login with email and password</br>
+                        </br>
+                        <b>Given </b>I have and valid email</br>
+                        <b>And </b>I obtained a password with signup</br>
+                        <b>When </b>I enters the email and password</br>
+                        <b>Then </b>I see my homepage.</br>
+                    </span>
+                </section>
+				<section>
+                    <h2>Code Coverage</h2>
+                    <pre class="fragment"><code>
+$ coverage report -m
+Name                      Stmts   Miss  Cover   Missing
+-------------------------------------------------------
+my_program.py                20      4    80%   33-35, 39
+my_other_module.py           56      6    89%   17-23
+-------------------------------------------------------
+TOTAL                        76     10
+                    </code></pre>
+                    <ul class="enfassis">
+                        <li class="fragment">Mesure which % of code is tested</li>
+                        <li class="fragment">Allows to know which lines are not tested</li>
+                        <li class="fragment">As HTML report if desired</li>
+                    </ul>
+                    <br/>
+                    <h4 class="fragment">Please don't go mad with 100% coverage</h4>
+                </section>
+				<section>
+                    <h2>When to run the tests?</h2>
+                    <ul class="enfassis">
+                        <li class="fragment">Programmer always run tests?</li>
+                        <li class="fragment">Sure?</li>
+                        <li class="fragment">Always always always?</li>
+                        <li class="fragment">I don't belive you</li>
+                    </ul>
+                    <h2 class="fragment">Continuous Integration to the rescue!!!!</h2>
+                </section>
+				<section>
+                    <h2>Continuous Integration</h2>
+                    <ol class="enfassis">
+                        <li class="fragment">After commit hook</li>
+                        <li class="fragment">Notifies author/manager when failure</li>
+                        <li class="fragment">With multiple targets (e.g. Python 2 vs. Python 3)</li>
+                        <li class="fragment">With multiple databases (e.g. PostgresSQL vs. MySQL)</li>
+                    </ol>
+                </section>
+				<section>
+                    <h2>But TDD+BDD+CI is enough?</h2>
+                    <img src="img/manual-testing.png">
+                    <h3 class="fragment"><b class="enfassis">NO!!</b>Of course</li>
+                    <h3 class="fragment">Continous delivery to help you!</h3>
+                </section>
+				<section>
+                    <h2>Continuous Delivery</h2>
+                    <ul class="enfassis">
+                        <li class="fragment">Once CI has passed</li>
+                        <li class="fragment">To a staging server</li>
+                        <li class="fragment">Normally using commit hash</li>
+                        <li class="fragment">URL sent to testing team</li>
+                        <li class="fragment">Cheaper with containers (Docker)</li>
+                        <li class="fragment">Production when tagged</li>
+                    </ul>
+                </section>
+				<section>
+                    <h2>Summary: Full Process</h2>
+                    <ol class="enfassis">
+                        <li class="fragment">Write Test</li>
+                        <li class="fragment">Implement Functionality</li>
+                        <li class="fragment">Run Test</li>
+                        <li class="fragment">Commit and push</li>
+                        <li class="fragment">CI Test on all platforms</li>
+                        <li class="fragment">CD upgrades staging machine</li>
+                        <li class="fragment">Repeat 1. for each functionality</li>
+                        <li class="fragment">Testing team says OK</li>
+                        <li class="fragment">Create tag on repo</li>
+                        <li class="fragment">Commit and push</li>
+                        <li class="fragment">CI Test on all platforms</li>
+                        <li class="fragment">CD upgrades production machine</li>
+                    </ol>
+                </section>
+				<section>
+                    <h2>Summary: Results</h2>
+                    <img src="img/happy_face.jpg" style="float: left;">
+                    <ol class="enfassis" style="float: right;">
+                        <li class="fragment">Developers</li>
+                        <li class="fragment">Quality Team</li>
+                        <li class="fragment">Support Team</li>
+                        <li class="fragment">Product Manager</li>
+                        <li class="fragment">Users</li>
+                        <li class="fragment">Managers</li>
+                    </ol>
+                </section>
+				<section>
+                    <h2>Summary: (Real) Results</h2>
+                    <ol class="enfassis">
+                        <li class="fragment">More Quality control</li>
+                        <li class="fragment">Find problems earlier</li>
+                        <li class="fragment">Prevent regressions</li>
+                        <li class="fragment">Code documentation</li>
+                        <li class="fragment">Faster Development</li>
+                        <li class="fragment">Faster Feedback</li>
+                        <li class="fragment">Reduce change fear</li>
+                    </ol>
+                </section>
+				<section>
+                    <h2>Bonus: Upgrade dependency libs (personal experience)</h2>
+                    <h4 class="fragment">Migrations
+                        <span class="enfassis">&hearts;</span> Tests</h4>
+                    <h4 class="fragment">My steps to migrate to new version:</h4>
+                    <ol class="enfassis">
+                        <li class="fragment">Write tests (if none)</li>
+                        <li class="fragment">Migrate tests (if required)</li>
+                        <li class="fragment">Update dependencies</li>
+                        <li class="fragment">Run tests</li>
+                        <li class="fragment">Fix errors</li>
+                        <li class="fragment">Repeat untill all green</li>
+                    </ol>
+                </section>
+				<section>
+                    <img src="img/questions.png">
+                </section>
+				<section>
+                    <h1>Thank you!</h1>
+                    <p>The presentation code is avaiable on </p>
+                    <p><a target="_blank"
+                        href="http://github.com/pokoli/software-testing">
+                        http://github.com/pokoli/software-testing
+                    </a></p>
+                </section>
+			</div>
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				history: true,
+
+				// More info https://github.com/hakimel/reveal.js#dependencies
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+				]
+			});
+		</script>
+	</body>
+</html>
