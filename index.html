@@ -105,12 +105,13 @@ from mock import patch
 
 converter = CurrencyConverter()
 
-@patch.object(converter, 'get_ratios_xml')
-def get_local_ratios_xml(date, mock_method):
-    mock_metohd.assert_called_with(date.today)
+def get_local_ratios_xml(d):
+    self.assertEqual(d, date.today)
     return open('local.xml').read()
 
-self.assertEqual(converter.get_eur_to_usd(1), 1.12)
+
+with patch.object(CurrencyConverter, 'get_ratios_xml', new=get_local_ratios_xml):
+    self.assertEqual(converter.get_eur_to_usd(1), 1.12)
                     </code></pre>
                 </section>
                 <section>
